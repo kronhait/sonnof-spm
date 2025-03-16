@@ -1,0 +1,88 @@
+esphome:
+  name: sonoffspm
+  friendly_name: Sonoff SPM
+
+esp8266:
+  board: esp8285
+  restore_from_flash: true
+
+wifi:
+  ssid: "UPC31A536A"
+  password: "FjxvhrswHkw"
+  
+  ap:
+    ssid: "Sonoff SPM Fallback"
+    password: "12345678"
+
+captive_portal:
+
+web_server:
+  port: 80
+
+logger:
+  level: DEBUG
+
+api:
+
+ota:
+  password: ""
+
+uart:
+  rx_pin: GPIO3
+  tx_pin: GPIO1
+  baud_rate: 4800
+  debug:
+    direction: BOTH
+    dummy_receiver: false
+    after:
+      delimiter: "\n"
+
+sensor:
+  - platform: wifi_signal
+    name: "WiFi Signal"
+    update_interval: 60s
+
+  - platform: cse7766
+    current:
+      name: "Current"
+      filters:
+        - filter_out: 0
+        - sliding_window_moving_average:
+            window_size: 5
+            send_every: 5
+    voltage:
+      name: "Voltage"
+      filters:
+        - filter_out: 0
+    power:
+      name: "Power"
+      filters:
+        - filter_out: 0
+    energy:
+      name: "Energy"
+      filters:
+        - multiply: 0.001
+    update_interval: 5s
+
+binary_sensor:
+  - platform: status
+    name: "Status"
+
+switch:
+  - platform: gpio
+    name: "Relay"
+    pin: GPIO12
+    restore_mode: RESTORE_DEFAULT_ON
+    id: relay
+
+text_sensor:
+  - platform: version
+    name: "ESPHome Version"
+
+  - platform: wifi_info
+    ip_address:
+      name: "IP Address"
+    ssid:
+      name: "Connected SSID"
+    bssid:
+      name: "Connected BSSID"
